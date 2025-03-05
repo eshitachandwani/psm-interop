@@ -52,8 +52,10 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
     tag: str = "latest"
     region: str = "us-central1"
     current_revision: Optional[str] = None
-    # gcp_project: Optional[str] = None
     gcp_ui_url: Optional[str] = None
+    is_client: bool = False
+    mesh_name: Optional[str] = None
+    server_target: Optional[str] = None
 
     run_history: collections.deque[RunHistory]
 
@@ -68,6 +70,10 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
         image_name: str,
         region: str,
         network: Optional[str] = None,
+        *,
+        is_client: bool = False,
+        mesh_name: Optional[str] = None,
+        server_target: Optional[str] = None,
     ) -> None:
         super().__init__()
 
@@ -78,6 +84,9 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
         self.region = region
         self.current_revision = None
         self.gcp_ui_url = None
+        self.is_client = is_client
+        self.mesh_name = mesh_name
+        self.server_target = server_target
 
         # Persistent across many runs.
         self.run_history = collections.deque()
@@ -110,9 +119,20 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
 
         self._reset_state()
         self.time_start_requested = _datetime.now()
+        deploy_kwargs = {**kwargs}
+        deploy_kwargs["is_client"] = self.is_client
+
+        if self.is_client:
+            if not self.mesh_name or not self.server_target:
+                raise ValueError(
+                    "mesh_name and server_target must be provided for client deployment."
+                )
+            deploy_kwargs["mesh_name"] = self.mesh_name
+            deploy_kwargs["server_target"] = self.server_target
         self.current_revision = self.cloudrun_api_manager.deploy_service(
             self.service_name,
             self.image_name,
+            **deploy_kwargs,
         )
 
     def _start_completed(self):
@@ -128,6 +148,9 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
                 time_stopped=self.time_stopped,
             )
             self.run_history.append(run_history)
+
+    def get_service_url(self) -> str:
+        return self.cloudrun_api_manager.get_service_url()
 
     def stop(self):
         """Deletes Cloud Run Service"""

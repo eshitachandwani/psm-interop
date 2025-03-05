@@ -13,9 +13,13 @@
 # limitations under the License.
 import abc
 import logging
+import subprocess
+import os
 
 from google.cloud import run_v2
+from google.api import launch_stage_pb2
 
+from typing import Optional
 from framework.infrastructure.gcp.api import GcpProjectApiResource
 
 logger = logging.getLogger(__name__)
@@ -27,6 +31,8 @@ DEFAULT_TIMEOUT = 600
 class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
     project: str
     region: str
+    _connector: str
+    _connector_name: str
     _parent: str
     _client: run_v2.ServicesClient
     _service: run_v2.Service
@@ -39,7 +45,7 @@ class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
 
         self.project = project
         self.region = region
-        client_options = {"api_endpoint": f"{self.region}-run.googleapis.com"}
+        client_options = {"api_endpoint": f"{self.region}-staging-run.sandbox.googleapis.com"}
         self._client = run_v2.ServicesClient(client_options=client_options)
         self._parent = f"projects/{self.project}/locations/{self.region}"
         self._service = None
@@ -50,6 +56,9 @@ class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
         image_name: str,
         *,
         test_port: int = DEFAULT_TEST_PORT,
+        mesh_name: Optional[str] = None,
+        server_target: Optional[str] = None,
+        is_client: bool = False
     ):
         if not service_name:
             raise ValueError("service_name cannot be empty or None")
@@ -57,21 +66,51 @@ class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
             raise ValueError("image_name cannot be empty or None")
         service_name = service_name[:49]
 
-        service = run_v2.Service(
-            template=run_v2.RevisionTemplate(
-                containers=[
-                    run_v2.Container(
-                        image=image_name,
-                        ports=[
-                            run_v2.ContainerPort(
-                                name="h2c",
-                                container_port=test_port,
-                            ),
-                        ],
-                    )
-                ]
-            ),
+        containers = [
+            run_v2.Container(
+                image=image_name,
+                ports=[
+                    run_v2.ContainerPort(
+                        name="h2c",
+                        container_port=test_port , # conditional port setting
+                    ),
+                ],
+            )
+        ]
+
+        revision_template_args = {}
+        if is_client:
+            containers = [
+            run_v2.Container(
+                image=image_name,
+                ports=[
+                    run_v2.ContainerPort(
+                        name="h2c",
+                        container_port=8079 , # conditional port setting
+                    ),
+                ],
+            )
+        ]
+            if not mesh_name or not server_target:
+                raise ValueError("mesh_name and server_target are required for client deployment.")
+
+            revision_template_args["vpc_access"] = run_v2.VpcAccess(
+                network_interfaces=[run_v2.VpcAccess.NetworkInterface(
+                    network="default",
+                    subnetwork="default",
+                )]
+            )
+            revision_template_args["service_mesh"] = run_v2.ServiceMesh(
+                    mesh=mesh_name,
+                )
+            containers[0].args = [f"--server={server_target}", "--secure_mode=false"]
+            containers[0].env = [run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_AUTHORITY_REWRITE",value="true"),run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_SYSTEM_ROOT_CERTS",value="true"),run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_GCP_AUTHENTICATION_FILTER",value="true"),run_v2.EnvVar(name="is-trusted-xds-server-experimental",value="true")]
+            
+        revision_template = run_v2.RevisionTemplate(
+            containers=containers, **revision_template_args
         )
+
+        service = run_v2.Service(launch_stage=launch_stage_pb2.ALPHA,template=revision_template)
 
         request = run_v2.CreateServiceRequest(
             parent=self._parent, service=service, service_id=service_name
@@ -97,7 +136,7 @@ class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
                 name=f"{self._parent}/services/{service_name}"
             )
             operation = self._client.delete_service(request=request)
-            operation.result(timeout=300)
+            operation.result(timeout=DEFAULT_TIMEOUT)
             logger.info("Deleted service: %s", service_name)
         except Exception as e:
             logger.exception("Error deleting service: %s", e)

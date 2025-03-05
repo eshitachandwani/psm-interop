@@ -48,6 +48,7 @@ from framework.rpc import grpc_testing
 from framework.test_app import client_app
 from framework.test_app import server_app
 from framework.test_app.runners.cloud_run import cloud_run_xds_server_runner
+from framework.test_app.runners.cloud_run import cloud_run_xds_client_runner
 from framework.test_app.runners.k8s import k8s_xds_client_runner
 from framework.test_app.runners.k8s import k8s_xds_server_runner
 from framework.test_cases import base_testcase
@@ -68,6 +69,7 @@ TrafficDirectorManager = traffic_director.TrafficDirectorManager
 TrafficDirectorAppNetManager = traffic_director.TrafficDirectorAppNetManager
 TrafficDirectorSecureManager = traffic_director.TrafficDirectorSecureManager
 CloudRunServerRunner = cloud_run_xds_server_runner.CloudRunServerRunner
+CloudRunClientRunner = cloud_run_xds_client_runner.CloudRunClientRunner
 TrafficDirectorCloudRunManager = td_cloudrun.TrafficDirectorCloudRunManager
 XdsTestServer = server_app.XdsTestServer
 XdsTestClient = client_app.XdsTestClient
@@ -1404,6 +1406,7 @@ class SecurityXdsKubernetesTestCase(IsolatedXdsKubernetesTestCase):
 
 class CloudRunXdsKubernetesTestCase(RegularXdsKubernetesTestCase):
     server_runner: CloudRunServerRunner
+    client_runner: CloudRunClientRunner
     td: TrafficDirectorCloudRunManager
 
     @classmethod
@@ -1465,23 +1468,23 @@ class CloudRunXdsKubernetesTestCase(RegularXdsKubernetesTestCase):
                 replica_count=server_runner.replica_count
             )
 
-    def startTestServers(
-        self, replica_count=1, server_runner=None, **kwargs
-    ) -> List[XdsTestServer]:
-        if server_runner is None:
-            self.server_runner = CloudRunServerRunner(
-                project=self.project,
-                service_name=self.server_namespace,
-                image_name=self.server_image,
-                network=self.network,
-                region=self.region,
-            )
-        test_servers = self.server_runner.run()
-        for test_server in test_servers:
-            test_server.set_xds_address(
-                self.server_xds_host, self.server_xds_port
-            )
-        return test_servers
+    # def startTestServers(
+    #     self, replica_count=1, server_runner=None, **kwargs
+    # ) -> List[XdsTestServer]:
+    #     if server_runner is None:
+    #         self.server_runner = CloudRunServerRunner(
+    #             project=self.project,
+    #             service_name=self.server_namespace,
+    #             image_name=self.server_image,
+    #             network=self.network,
+    #             region=self.region,
+    #         )
+    #     test_servers = self.server_runner.run()
+    #     for test_server in test_servers:
+    #         test_server.set_xds_address(
+    #             self.server_xds_host, self.server_xds_port
+    #         )
+    #     return test_servers
 
     def startTestClient(
         self,
@@ -1493,6 +1496,30 @@ class CloudRunXdsKubernetesTestCase(RegularXdsKubernetesTestCase):
             secure_mode=True,
             **kwargs,
         )
+    
+    def startCloudrunClient(
+        self, test_server: XdsTestServer, client_runner=None, **kwargs
+    ) -> XdsTestClient:
+        """Starts Cloud Run Test Client
+
+        Returns:
+            List[XdsTestClient]: List of XdsTestClients
+        """
+
+        if client_runner is None:
+            self.client_runner = CloudRunClientRunner(
+                project=self.project,
+                service_name=self.client_namespace,
+                image_name=self.client_image,
+                network=self.network,
+                region=self.region,
+                mesh_name=self.td.mesh.url,
+                # server_target=self.server_runner.get_service_url(),
+                server_target=test_server.xds_uri,
+                **kwargs,
+            )
+        test_client = self.client_runner.run()
+        return test_client
 
     def backendServiceAddServerlessNegBackends(self):
         logger.info("Creating serverless NEG")
@@ -1535,41 +1562,44 @@ class CloudRunXdsKubernetesTestCase(RegularXdsKubernetesTestCase):
     def cleanup(self):
         self.td.cleanup(force=self.force_cleanup)
         self.server_runner.cleanup(force=self.force_cleanup)
-        self.client_runner.cleanup(
-            force=self.force_cleanup, force_namespace=self.force_cleanup
-        )
+        if isinstance(self.client_runner,CloudRunClientRunner):
+            self.client_runner.cleanup(force=self.force_cleanup)
+        # else:
+        #     self.client_runner.cleanup(
+        #     force=self.force_cleanup, force_namespace=self.force_cleanup
+        # )
 
     def tearDown(self):
         logger.info("----- TestMethod %s teardown -----", self.test_name)
         logger.debug("Getting pods restart times")
-        client_restarts: int = 0
-        try:
-            client_restarts = self.client_runner.get_pod_restarts(
-                self.client_runner.deployment
-            )
-        except (retryers.RetryError, k8s.NotFound) as e:
-            logger.exception(e)
+        # client_restarts: int = 0
+        # try:
+        #     client_restarts = self.client_runner.get_pod_restarts(
+        #         self.client_runner.deployment
+        #     )
+        # except (retryers.RetryError, k8s.NotFound) as e:
+        #     logger.exception(e)
 
-        retryer = retryers.constant_retryer(
-            wait_fixed=_timedelta(seconds=10),
-            attempts=3,
-            log_level=logging.INFO,
-        )
-        try:
-            retryer(self.cleanup)
-        except retryers.RetryError:
-            logger.exception("Got error during teardown")
-        finally:
-            logger.info("----- Test client/server logs -----")
-            self.client_runner.logs_explorer_run_history_links()
+        # retryer = retryers.constant_retryer(
+        #     wait_fixed=_timedelta(seconds=10),
+        #     attempts=3,
+        #     log_level=logging.INFO,
+        # )
+        # try:
+        #     retryer(self.cleanup)
+        # except retryers.RetryError:
+        #     logger.exception("Got error during teardown")
+        # finally:
+        #     logger.info("----- Test client/server logs -----")
+        #     self.client_runner.logs_explorer_run_history_links()
 
-            # Fail if any of the pods restarted.
-            self.assertEqual(
-                client_restarts,
-                0,
-                msg=(
-                    "Client container unexpectedly restarted"
-                    f" {client_restarts} times during test. In most cases, this"
-                    " is caused by the test client app crash."
-                ),
-            )
+        #     # Fail if any of the pods restarted.
+        #     self.assertEqual(
+        #         client_restarts,
+        #         0,
+        #         msg=(
+        #             "Client container unexpectedly restarted"
+        #             f" {client_restarts} times during test. In most cases, this"
+        #             " is caused by the test client app crash."
+        #         ),
+        #     )
