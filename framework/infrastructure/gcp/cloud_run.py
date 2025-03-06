@@ -45,7 +45,7 @@ class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
 
         self.project = project
         self.region = region
-        client_options = {"api_endpoint": f"{self.region}-staging-run.sandbox.googleapis.com"}
+        client_options = {"api_endpoint": f"{self.region}-run.googleapis.com"}
         self._client = run_v2.ServicesClient(client_options=client_options)
         self._parent = f"projects/{self.project}/locations/{self.region}"
         self._service = None
@@ -104,7 +104,7 @@ class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
                     mesh=mesh_name,
                 )
             containers[0].args = [f"--server={server_target}", "--secure_mode=false"]
-            containers[0].env = [run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_AUTHORITY_REWRITE",value="true"),run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_SYSTEM_ROOT_CERTS",value="true"),run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_GCP_AUTHENTICATION_FILTER",value="true"),run_v2.EnvVar(name="is-trusted-xds-server-experimental",value="true")]
+            containers[0].env = [run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_AUTHORITY_REWRITE",value="true"),run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_SYSTEM_ROOT_CERTS",value="true"),run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_GCP_AUTHENTICATION_FILTER",value="true"),run_v2.EnvVar(name="is-trusted-xds-server-experimental",value="true"),run_v2.EnvVar(name="GRPC_XDS_BOOTSTRAP_CONFIG",value="/tmp/grpc-xds/td-grpc-bootstrap.json")]
             
         revision_template = run_v2.RevisionTemplate(
             containers=containers, **revision_template_args

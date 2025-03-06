@@ -1468,23 +1468,23 @@ class CloudRunXdsKubernetesTestCase(RegularXdsKubernetesTestCase):
                 replica_count=server_runner.replica_count
             )
 
-    # def startTestServers(
-    #     self, replica_count=1, server_runner=None, **kwargs
-    # ) -> List[XdsTestServer]:
-    #     if server_runner is None:
-    #         self.server_runner = CloudRunServerRunner(
-    #             project=self.project,
-    #             service_name=self.server_namespace,
-    #             image_name=self.server_image,
-    #             network=self.network,
-    #             region=self.region,
-    #         )
-    #     test_servers = self.server_runner.run()
-    #     for test_server in test_servers:
-    #         test_server.set_xds_address(
-    #             self.server_xds_host, self.server_xds_port
-    #         )
-    #     return test_servers
+    def startTestServers(
+        self, replica_count=1, server_runner=None, **kwargs
+    ) -> List[XdsTestServer]:
+        if server_runner is None:
+            self.server_runner = CloudRunServerRunner(
+                project=self.project,
+                service_name=self.server_namespace,
+                image_name=self.server_image,
+                network=self.network,
+                region=self.region,
+            )
+        test_servers = self.server_runner.run()
+        for test_server in test_servers:
+            test_server.set_xds_address(
+                self.server_xds_host, self.server_xds_port
+            )
+        return test_servers
 
     def startTestClient(
         self,
@@ -1559,11 +1559,11 @@ class CloudRunXdsKubernetesTestCase(RegularXdsKubernetesTestCase):
         )
         self.assertSameElements(want, seen)
 
-    def cleanup(self):
-        self.td.cleanup(force=self.force_cleanup)
-        self.server_runner.cleanup(force=self.force_cleanup)
-        if isinstance(self.client_runner,CloudRunClientRunner):
-            self.client_runner.cleanup(force=self.force_cleanup)
+    # def cleanup(self):
+        # self.td.cleanup(force=self.force_cleanup)
+        # self.server_runner.cleanup(force=self.force_cleanup)
+        # if isinstance(self.client_runner,CloudRunClientRunner):
+        #     self.client_runner.cleanup(force=self.force_cleanup)
         # else:
         #     self.client_runner.cleanup(
         #     force=self.force_cleanup, force_namespace=self.force_cleanup
