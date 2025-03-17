@@ -68,7 +68,12 @@ class GrpcClientHelper:
         self._log_rpc_request(rpc, req, call_kwargs, log_level)
 
         # Call RPC, e.g. RpcStub(channel).RpcMethod(req, ...options)
+        logger.info("eshita stub %s",self.stub)
+        logger.info("eshita rpc %s,rpc")
         rpc_callable: grpc.UnaryUnaryMultiCallable = getattr(self.stub, rpc)
+        logger.info("eshita request %s",req)
+        logger.info("eshita %s", rpc_callable)
+        logger.info("eshita call args %s", call_kwargs)
         return rpc_callable(req, **call_kwargs)
 
     def _log_rpc_request(self, rpc, req, call_kwargs, log_level=logging.DEBUG):

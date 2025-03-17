@@ -17,9 +17,8 @@ Run xDS Test Client on Cloud Run.
 import dataclasses
 import logging
 from typing import List, Optional
-
 from typing_extensions import override
-
+from framework.infrastructure import gcp
 from framework.test_app.runners.cloud_run import cloud_run_base_runner
 from framework.test_app.client_app import XdsTestClient
 
@@ -27,8 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass(frozen=True)
-class CloudRunClientDeploymentArgs:
-    """Arguments for deploying a client to Cloud Run."""
+class CloudRunDeploymentArgs:
+    """Arguments for deploying a server to Cloud Run."""
 
     env_vars: dict = dataclasses.field(default_factory=dict)
     max_instances: int = 10  # Example: Maximum number of instances
@@ -61,9 +60,12 @@ class CloudRunClientRunner(cloud_run_base_runner.CloudRunBaseRunner):
         image_name: str,
         network: str,
         region: str,
+        debug_use_port_forwarding: bool,
+        gcp_api_manager:gcp.api.GcpApiManager,
         *,
-        mesh_name: str,
-        server_target: str
+        mesh:str,
+        server_target:str,
+        is_client:bool=True,
     ):
         super().__init__(
             project,
@@ -71,50 +73,57 @@ class CloudRunClientRunner(cloud_run_base_runner.CloudRunBaseRunner):
             image_name,
             network=network,
             region=region,
-            is_client=True,
-            mesh_name=mesh_name,
-            server_target=server_target
+            gcp_ui_url=gcp_api_manager.gcp_ui_url,
+            mesh=mesh,
+            server_target=server_target,
+            is_client=is_client,
         )
         # Mutable state associated with each run.
         self._reset_state()
+        self.debug_use_port_forwarding = debug_use_port_forwarding
+
 
     @override
     def _reset_state(self):
         super()._reset_state()
         self.service = None
-        self.pods_to_clients = {}
+        self.pods_to_servers = {}
         self.replica_count = 0
 
     @override
     def run(self, **kwargs) -> XdsTestClient:
         """Deploys and manages the xDS Test Client on Cloud Run."""
         logger.info(
-            "Starting cloud run client with service %s and image %s",
+            "Starting cloud run Client with service %s and image %s",
             self.service_name,
             self.image_name,
         )
-        if not self.mesh_name or not self.server_target:
-            raise ValueError("mesh_name and server_target must be provided for client deployment.")
 
         super().run(**kwargs)
-        clients = [
-            XdsTestClient(
-                ip="0.0.0.0", rpc_port=0, hostname=self.current_revision,server_target=self.server_target
+        logger.info("eshita %s",self.current_revision)
+
+        # return client_app.XdsTestClient(
+        #     ip=pod.status.pod_ip,
+        #     rpc_port=rpc_port,
+        #     server_target=server_target,
+        #     hostname=pod.metadata.name,
+        #     rpc_host=rpc_host,
+        #     monitoring_port=monitoring_port,
+        # )
+        client = XdsTestClient(
+                ip="0.0.0.0", rpc_port=50052, server_target=self.server_target,hostname=self.current_revision,rpc_host=None,monitoring_port=9464,
             )
-        ]
-        self.clients = clients  # Add clients to the list
         self._start_completed()
-        return clients[0]
+        return client
 
     def get_service_url(self):
-        return self.cloudrun_api_manager.get_service_url()
+        return self.cloud_run_api_manager.get_service_uri(self.service_name)
 
     @override
     def cleanup(self, *, force=False):
         try:
-            if self.service:
-                self.stop()
-                self.service_name = None
-                self.service = None
+            self.stop()
+            # self.service_name = None
+            # self.service = None
         finally:
             self._stop()

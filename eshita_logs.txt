@@ -1,0 +1,394 @@
+Saving framework log to /Users/emchandwani/psm-interop/out/run/20250317-205822-cloud_run_server_baseline_test.log
++ [20:58:22 IST]	 exec python tests/cloud_run_server_baseline_test.py --flagfile=/Users/emchandwani/psm-interop/config/local-dev.cfg
+Running tests under Python 3.10.16: /Users/emchandwani/psm-interop/venv/bin/python
+I0317 20:58:23.702554 8252002176 xds_k8s_testcase.py:177] ----- Testing CloudRunServerBaselineTest -----
+I0317 20:58:23.702600 8252002176 xds_k8s_testcase.py:178] Logs timezone: IST
+I0317 20:58:23.702672 8252002176 xds_k8s_testcase.py:108] Detected language and version: TestConfig(client_lang='cpp', server_lang='cpp', version=None)
+I0317 20:58:23.743031 8252002176 k8s.py:264] Using kubernetes context "gke_emchandwani-default_us-central1-a_xds-k8s-interop-tests-cluster2", active host: https://23.236.50.221
+[ RUN      ] CloudRunServerBaselineTest.test_GKE_client_cloudrun_service
+I0317 20:58:25.573673 8252002176 xds_k8s_testcase.py:851] Test run resource prefix: emchandwani-psm, suffix: 20250317-1528-l31o3
+I0317 20:58:27.248244 8252002176 logs.py:31] Log root dir: /Users/emchandwani/psm-interop/out
+I0317 20:58:30.522633 8252002176 xds_k8s_testcase.py:846] Found unused xds port: 65219
+I0317 20:58:30.523588 8252002176 xds_k8s_testcase.py:333] --- Starting subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.0_create_mesh ---
+I0317 20:58:30.523759 8252002176 traffic_director.py:949] Creating Mesh emchandwani-psm-grpc-mesh-20250317-1528-l31o3
+I0317 20:58:30.525599 8252002176 api.py:545] Creating networkservices resource:
+[38;5;221m---[39m[38;5;15m [39m[38;5;117m{[39m[38;5;117m}[39m
+[38;5;221m...[39m
+
+I0317 20:58:32.344506 8252002176 api.py:601] Waiting 600 sec for networkservices operation id: projects/emchandwani-default/locations/global/operations/operation-1742225312073-6308b70d845c0-974c7d85-24d65201
+I0317 20:58:38.553122 8252002176 api.py:567] Loaded projects/emchandwani-default/locations/global/meshes/emchandwani-psm-grpc-mesh-20250317-1528-l31o3:
+[38;5;221m---[39m
+[38;5;203mcreateTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:28:32.210927549Z[39m[38;5;150m'[39m
+[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/global/meshes/emchandwani-psm-grpc-mesh-20250317-1528-l31o3[39m
+[38;5;203mselfLink[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mhttps://networkservices.googleapis.com/v1alpha1/projects/emchandwani-default/locations/global/meshes/emchandwani-psm-grpc-mesh-20250317-1528-l31o3[39m
+[38;5;203mupdateTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:28:35.548951883Z[39m[38;5;150m'[39m
+[38;5;221m...[39m
+
+I0317 20:58:38.553253 8252002176 xds_k8s_testcase.py:338] --- Finished subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.0_create_mesh ---
+I0317 20:58:38.553298 8252002176 xds_k8s_testcase.py:333] --- Starting subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.1_start_cloudrun_test_server ---
+I0317 20:58:39.186514 8252002176 cloud_run_xds_server_runner.py:89] Starting cloud run server with service emchandwani-psm-server-20250317-1528-l31o3 and image us-docker.pkg.dev/grpc-testing/psm-interop/cpp-server:v1.70.x
+I0317 20:58:41.196163 8252002176 cloud_run.py:173] Deploying Cloud Run service 'emchandwani-psm-server-20250317-1528-l31o3'
+I0317 20:58:42.722141 8252002176 api.py:567] Loaded projects/emchandwani-default/locations/us-central1/services/emchandwani-psm-server-20250317-1528-l31o3:
+[38;5;221m---[39m
+[38;5;203mconditions[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;203mlastTransitionTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:28:41.971290Z[39m[38;5;150m'[39m
+[38;5;15m  [39m[38;5;203mmessage[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mProvisioning[39m[38;5;150m [39m[38;5;150mrevision[39m[38;5;150m [39m[38;5;150minstances[39m[38;5;150m [39m[38;5;150mto[39m[38;5;150m [39m[38;5;150mreceive[39m[38;5;150m [39m[38;5;150mtraffic.[39m
+[38;5;15m  [39m[38;5;203mstate[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mCONDITION_RECONCILING[39m
+[38;5;15m  [39m[38;5;203mtype[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mRoutesReady[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;203mlastTransitionTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:28:42.159949Z[39m[38;5;150m'[39m
+[38;5;15m  [39m[38;5;203mmessage[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mDeploying[39m[38;5;150m [39m[38;5;150mRevision.[39m
+[38;5;15m  [39m[38;5;203mstate[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mCONDITION_SUCCEEDED[39m
+[38;5;15m  [39m[38;5;203mtype[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mConfigurationsReady[39m
+[38;5;203mcreateTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:28:41.033956Z[39m[38;5;150m'[39m
+[38;5;203mcreator[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150memchandwani@google.com[39m
+[38;5;203metag[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m"CKn_4L4GEKDBmBA/cHJvamVjdHMvZW1jaGFuZHdhbmktZGVmYXVsdC9sb2NhdGlvbnMvdXMtY2VudHJhbDEvc2VydmljZXMvZW1jaGFuZHdhbmktcHNtLXNlcnZlci0yMDI1MDMxNy0xNTI4LWwzMW8z"[39m[38;5;150m'[39m
+[38;5;203mgeneration[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m1[39m[38;5;150m'[39m
+[38;5;203mingress[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mINGRESS_TRAFFIC_ALL[39m
+[38;5;203mlastModifier[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150memchandwani@google.com[39m
+[38;5;203mlatestCreatedRevision[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/us-central1/services/emchandwani-psm-server-20250317-1528-l31o3/revisions/emchandwani-psm-server-20250317-1528-l31o3-00001-hwh[39m
+[38;5;203mlatestReadyRevision[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/us-central1/services/emchandwani-psm-server-20250317-1528-l31o3/revisions/emchandwani-psm-server-20250317-1528-l31o3-00001-hwh[39m
+[38;5;203mlaunchStage[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGA[39m
+[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/us-central1/services/emchandwani-psm-server-20250317-1528-l31o3[39m
+[38;5;203mobservedGeneration[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m1[39m[38;5;150m'[39m
+[38;5;203mreconciling[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mtrue[39m
+[38;5;203mtemplate[39m[38;5;117m:[39m
+[38;5;15m  [39m[38;5;203mcontainers[39m[38;5;117m:[39m
+[38;5;15m  [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mimage[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mus-docker.pkg.dev/grpc-testing/psm-interop/cpp-server:v1.70.x[39m
+[38;5;15m    [39m[38;5;203mports[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mcontainerPort[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m8080[39m
+[38;5;15m      [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mh2c[39m
+[38;5;15m    [39m[38;5;203mresources[39m[38;5;117m:[39m
+[38;5;15m      [39m[38;5;203mcpuIdle[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mtrue[39m
+[38;5;15m      [39m[38;5;203mlimits[39m[38;5;117m:[39m
+[38;5;15m        [39m[38;5;203mcpu[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m1000m[39m
+[38;5;15m        [39m[38;5;203mmemory[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m512Mi[39m
+[38;5;15m    [39m[38;5;203mstartupProbe[39m[38;5;117m:[39m
+[38;5;15m      [39m[38;5;203mfailureThreshold[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m1[39m
+[38;5;15m      [39m[38;5;203mperiodSeconds[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m240[39m
+[38;5;15m      [39m[38;5;203mtcpSocket[39m[38;5;117m:[39m
+[38;5;15m        [39m[38;5;203mport[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m8080[39m
+[38;5;15m      [39m[38;5;203mtimeoutSeconds[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m240[39m
+[38;5;15m  [39m[38;5;203mmaxInstanceRequestConcurrency[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m80[39m
+[38;5;15m  [39m[38;5;203mscaling[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203mmaxInstanceCount[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m100[39m
+[38;5;15m  [39m[38;5;203mserviceAccount[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m895271681097-compute@developer.gserviceaccount.com[39m
+[38;5;15m  [39m[38;5;203mtimeout[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m300s[39m
+[38;5;203mterminalCondition[39m[38;5;117m:[39m
+[38;5;15m  [39m[38;5;203mlastTransitionTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:28:42.159949Z[39m[38;5;150m'[39m
+[38;5;15m  [39m[38;5;203mmessage[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mDeploying[39m[38;5;150m [39m[38;5;150mRevision.[39m
+[38;5;15m  [39m[38;5;203mstate[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mCONDITION_RECONCILING[39m
+[38;5;15m  [39m[38;5;203mtype[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mReady[39m
+[38;5;203mtraffic[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;203mpercent[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m100[39m
+[38;5;15m  [39m[38;5;203mtype[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mTRAFFIC_TARGET_ALLOCATION_TYPE_LATEST[39m
+[38;5;203muid[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m29a143ab-aac2-43ec-9c57-e137990aabbd[39m
+[38;5;203mupdateTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:28:41.033956Z[39m[38;5;150m'[39m
+[38;5;203murls[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;150mhttps://emchandwani-psm-server-20250317-1528-l31o3-895271681097.us-central1.run.app[39m
+[38;5;221m...[39m
+
+I0317 20:58:42.722553 8252002176 xds_k8s_testcase.py:338] --- Finished subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.1_start_cloudrun_test_server ---
+I0317 20:58:42.722655 8252002176 xds_k8s_testcase.py:333] --- Starting subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.2_create_serverless_neg ---
+I0317 20:58:42.722750 8252002176 xds_k8s_testcase.py:1490] Creating serverless NEG
+I0317 20:58:42.722822 8252002176 compute.py:591] Creating serverless NEG emchandwani-psm-neg-20250317-1528-l31o3-neg in us-central1
+I0317 20:58:45.607466 8252002176 compute.py:596] {'kind': 'compute#networkEndpointGroup', 'id': '4699081467776827715', 'creationTimestamp': '2025-03-17T08:28:44.113-07:00', 'selfLink': 'https://www.googleapis.com/compute/v1/projects/emchandwani-default/regions/us-central1/networkEndpointGroups/emchandwani-psm-neg-20250317-1528-l31o3-neg', 'name': 'emchandwani-psm-neg-20250317-1528-l31o3-neg', 'networkEndpointType': 'SERVERLESS', 'size': 0, 'region': 'https://www.googleapis.com/compute/v1/projects/emchandwani-default/regions/us-central1', 'cloudRun': {'service': 'emchandwani-psm-server-20250317-1528-l31o3'}}
+I0317 20:58:45.607903 8252002176 xds_k8s_testcase.py:338] --- Finished subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.2_create_serverless_neg ---
+I0317 20:58:45.608074 8252002176 xds_k8s_testcase.py:333] --- Starting subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.3_create_backend_service ---
+I0317 20:58:45.608341 8252002176 traffic_director.py:254] Creating HTTP2 Backend Service "emchandwani-psm-backend-service-20250317-1528-l31o3"
+I0317 20:58:45.624338 8252002176 compute.py:669] Creating compute resource:
+[38;5;221m---[39m
+[38;5;203mloadBalancingScheme[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mINTERNAL_SELF_MANAGED[39m
+[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150memchandwani-psm-backend-service-20250317-1528-l31o3[39m
+[38;5;203mprotocol[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mHTTP2[39m
+[38;5;221m...[39m
+
+I0317 20:58:46.385976 8252002176 compute.py:746] Waiting 600 sec for compute operation id: operation-1742225325802-6308b71a9c2d8-f5284a84-afafed74
+I0317 20:59:05.175665 8252002176 xds_k8s_testcase.py:338] --- Finished subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.3_create_backend_service ---
+I0317 20:59:05.175928 8252002176 xds_k8s_testcase.py:333] --- Starting subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.4_add_server_backends_to_backend_service ---
+I0317 20:59:05.176098 8252002176 traffic_director_cloudrun.py:79] Adding backends to Backend Service emchandwani-psm-backend-service-20250317-1528-l31o3: [{'group': ComputeV1.GcpResource(name='emchandwani-psm-neg-20250317-1528-l31o3-neg', url='https://www.googleapis.com/compute/v1/projects/emchandwani-default/regions/us-central1/networkEndpointGroups/emchandwani-psm-neg-20250317-1528-l31o3-neg'), 'balancingMode': 'us-central1', 'maxRatePerEndpoint': None, 'capacityScaler': 1.0}]
+I0317 20:59:05.183346 8252002176 compute.py:676] Patching compute resource:
+[38;5;221m---[39m
+[38;5;203mbackends[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;203mgroup[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mhttps://www.googleapis.com/compute/v1/projects/emchandwani-default/regions/us-central1/networkEndpointGroups/emchandwani-psm-neg-20250317-1528-l31o3-neg[39m
+[38;5;221m...[39m
+
+I0317 20:59:06.193775 8252002176 compute.py:746] Waiting 600 sec for compute operation id: operation-1742225345366-6308b72d44a2d-e1baca02-d85acec4
+I0317 20:59:26.541241 8252002176 xds_k8s_testcase.py:338] --- Finished subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.4_add_server_backends_to_backend_service ---
+I0317 20:59:26.541527 8252002176 xds_k8s_testcase.py:333] --- Starting subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.5_create_grpc_route ---
+I0317 20:59:26.541683 8252002176 traffic_director.py:980] Creating GrpcRoute emchandwani-psm-grpc-route-20250317-1528-l31o3
+I0317 20:59:26.545073 8252002176 api.py:545] Creating networkservices resource:
+[38;5;221m---[39m
+[38;5;203mhostnames[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-server:65219[39m
+[38;5;203mmeshes[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/global/meshes/emchandwani-psm-grpc-mesh-20250317-1528-l31o3[39m
+[38;5;203mrules[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;203maction[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203mdestinations[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mserviceName[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/global/backendServices/emchandwani-psm-backend-service-20250317-1528-l31o3[39m
+[38;5;221m...[39m
+
+I0317 20:59:28.074381 8252002176 api.py:601] Waiting 600 sec for networkservices operation id: projects/emchandwani-default/locations/global/operations/operation-1742225367778-6308b742a4429-8f347fd9-d2c9efa2
+I0317 20:59:37.375544 8252002176 api.py:567] Loaded projects/emchandwani-default/locations/global/grpcRoutes/emchandwani-psm-grpc-route-20250317-1528-l31o3:
+[38;5;221m---[39m
+[38;5;203mcreateTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:29:27.878185116Z[39m[38;5;150m'[39m
+[38;5;203mhostnames[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;150mpsm-grpc-server:65219[39m
+[38;5;203mmeshes[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/global/meshes/emchandwani-psm-grpc-mesh-20250317-1528-l31o3[39m
+[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/global/grpcRoutes/emchandwani-psm-grpc-route-20250317-1528-l31o3[39m
+[38;5;203mrules[39m[38;5;117m:[39m
+[38;5;117m-[39m[38;5;15m [39m[38;5;203maction[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203mdestinations[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mserviceName[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mprojects/emchandwani-default/locations/global/backendServices/emchandwani-psm-backend-service-20250317-1528-l31o3[39m
+[38;5;203mselfLink[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mhttps://networkservices.googleapis.com/v1alpha1/projects/emchandwani-default/locations/global/grpcRoutes/emchandwani-psm-grpc-route-20250317-1528-l31o3[39m
+[38;5;203mupdateTime[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m'[39m[38;5;150m2025-03-17T15:29:33.730091311Z[39m[38;5;150m'[39m
+[38;5;221m...[39m
+
+I0317 20:59:37.375651 8252002176 xds_k8s_testcase.py:338] --- Finished subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.5_create_grpc_route ---
+I0317 20:59:37.375675 8252002176 xds_k8s_testcase.py:333] --- Starting subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.7_start_test_client ---
+I0317 20:59:37.375728 8252002176 k8s_xds_client_runner.py:136] Deploying xDS test client "psm-grpc-client" to k8s namespace emchandwani-psm-client-20250317-1528-l31o3: server_target=xds:///psm-grpc-server:65219 rpc=UnaryCall qps=25 metadata='' secure_mode=True print_response=False is_trusted_xds_server_experimental=True
+I0317 20:59:37.375856 8252002176 k8s_base_runner.py:1171] GCP Logs Explorer link to psm-grpc-client:
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22k8s_container%22%0Aresource.labels.project_id%3D%22emchandwani-default%22%0Aresource.labels.container_name%3D%22psm-grpc-client%22%0Aresource.labels.namespace_name%3D%22emchandwani-psm-client-20250317-1528-l31o3%22;timeRange=2025-03-17T15:29:37.375775Z%2F2025-03-17T15:59:37.375775Z?project=emchandwani-default 
+I0317 20:59:37.379615 8252002176 k8s_base_runner.py:351] Rendered template kubernetes-manifests/namespace.yaml:
+[38;5;221m---[39m
+[38;5;203mapiVersion[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mv1[39m
+[38;5;203mkind[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mNamespace[39m
+[38;5;203mmetadata[39m[38;5;117m:[39m
+[38;5;15m  [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150memchandwani-psm-client-20250317-1528-l31o3[39m
+[38;5;15m  [39m[38;5;203mlabels[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150memchandwani-psm-client-20250317-1528-l31o3[39m
+[38;5;15m    [39m[38;5;203mowner[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mxds-k8s-interop-test[39m
+[38;5;221m...[39m
+
+I0317 20:59:38.228570 8252002176 k8s_base_runner.py:371] Namespace emchandwani-psm-client-20250317-1528-l31o3 created
+I0317 20:59:38.228664 8252002176 k8s_base_runner.py:458] Granting roles/iam.workloadIdentityUser to serviceAccount:emchandwani-default.svc.id.goog[emchandwani-psm-client-20250317-1528-l31o3/psm-grpc-client] for GCP Service Account xds-k8s-interop-tests@emchandwani-default.iam.gserviceaccount.com
+I0317 20:59:40.817169 8252002176 k8s_base_runner.py:351] Rendered template kubernetes-manifests/service-account.yaml:
+[38;5;221m---[39m
+[38;5;203mapiVersion[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mv1[39m
+[38;5;203mkind[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mServiceAccount[39m
+[38;5;203mmetadata[39m[38;5;117m:[39m
+[38;5;15m  [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client[39m
+[38;5;15m  [39m[38;5;203mnamespace[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150memchandwani-psm-client-20250317-1528-l31o3[39m
+[38;5;15m  [39m[38;5;203mlabels[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203mowner[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mxds-k8s-interop-test[39m
+[38;5;15m  [39m[38;5;203mannotations[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203miam.gke.io/gcp-service-account[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mxds-k8s-interop-tests@emchandwani-default.iam.gserviceaccount.com[39m
+[38;5;221m...[39m
+
+I0317 20:59:41.102921 8252002176 k8s_base_runner.py:371] ServiceAccount psm-grpc-client created
+I0317 20:59:41.115581 8252002176 k8s_base_runner.py:351] Rendered template kubernetes-manifests/client.deployment.yaml:
+[38;5;221m---[39m
+[38;5;203mapiVersion[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mapps/v1[39m
+[38;5;203mkind[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mDeployment[39m
+[38;5;203mmetadata[39m[38;5;117m:[39m
+[38;5;15m  [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client[39m
+[38;5;15m  [39m[38;5;203mnamespace[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150memchandwani-psm-client-20250317-1528-l31o3[39m
+[38;5;15m  [39m[38;5;203mlabels[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203mapp[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client[39m
+[38;5;15m    [39m[38;5;203mdeployment_id[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client-j08qrzhn[39m
+[38;5;15m    [39m[38;5;203mowner[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mxds-k8s-interop-test[39m
+[38;5;203mspec[39m[38;5;117m:[39m
+[38;5;15m  [39m[38;5;203mreplicas[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m1[39m
+[38;5;15m  [39m[38;5;203mselector[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203mmatchLabels[39m[38;5;117m:[39m
+[38;5;15m      [39m[38;5;203mapp[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client[39m
+[38;5;15m      [39m[38;5;203mdeployment_id[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client-j08qrzhn[39m
+[38;5;15m  [39m[38;5;203mtemplate[39m[38;5;117m:[39m
+[38;5;15m    [39m[38;5;203mmetadata[39m[38;5;117m:[39m
+[38;5;15m      [39m[38;5;203mlabels[39m[38;5;117m:[39m
+[38;5;15m        [39m[38;5;203mapp[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client[39m
+[38;5;15m        [39m[38;5;203mdeployment_id[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client-j08qrzhn[39m
+[38;5;15m        [39m[38;5;203mowner[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mxds-k8s-interop-test[39m
+[38;5;15m    [39m[38;5;203mspec[39m[38;5;117m:[39m
+[38;5;15m      [39m[38;5;203mserviceAccountName[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client[39m
+[38;5;15m      [39m[38;5;203mcontainers[39m[38;5;117m:[39m
+[38;5;15m        [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mpsm-grpc-client[39m
+[38;5;15m          [39m[38;5;203mimage[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mus-docker.pkg.dev/grpc-testing/psm-interop/cpp-client:v1.70.x[39m
+[38;5;15m          [39m[38;5;203mimagePullPolicy[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mAlways[39m
+[38;5;15m          [39m[38;5;203mstartupProbe[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;203mtcpSocket[39m[38;5;117m:[39m
+[38;5;15m              [39m[38;5;203mport[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m8079[39m
+[38;5;15m            [39m[38;5;203mperiodSeconds[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m3[39m
+[38;5;15m            [39m[38;5;203mfailureThreshold[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m1000[39m
+[38;5;15m          [39m[38;5;203margs[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--server=xds:///psm-grpc-server:65219[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--stats_port=8079[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--qps=25[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--rpc=UnaryCall[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--metadata=[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--secure_mode=True[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--print_response=False[39m[38;5;150m"[39m
+[38;5;15m          [39m[38;5;203mports[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mcontainerPort[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m8079[39m
+[38;5;15m          [39m[38;5;203menv[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_TRACE[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mxds_client[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_XDS_BOOTSTRAP[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m/tmp/grpc-xds/td-grpc-bootstrap.json[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_EXPERIMENTAL_XDS_AUTHORITY_REWRITE[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mtrue[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_EXPERIMENTAL_XDS_SYSTEM_ROOT_CERTS[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mtrue[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_EXPERIMENTAL_XDS_GCP_AUTHENTICATION_FILTER[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mtrue[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_XDS_EXPERIMENTAL_ENABLE_RING_HASH[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mtrue[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_XDS_EXPERIMENTAL_ENABLE_RETRY[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mtrue[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_EXPERIMENTAL_ENABLE_OUTLIER_DETECTION[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mtrue[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_EXPERIMENTAL_XDS_CUSTOM_LB_CONFIG[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mtrue[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mGRPC_EXPERIMENTAL_XDS_ENABLE_OVERRIDE_HOST[39m
+[38;5;15m              [39m[38;5;203mvalue[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150mtrue[39m[38;5;150m"[39m
+[38;5;15m          [39m[38;5;203mvolumeMounts[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mmountPath[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m/tmp/grpc-xds/[39m
+[38;5;15m              [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mgrpc-td-conf[39m
+[38;5;15m              [39m[38;5;203mreadOnly[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mtrue[39m
+[38;5;15m          [39m[38;5;203mresources[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;203mlimits[39m[38;5;117m:[39m
+[38;5;15m              [39m[38;5;203mcpu[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m800m[39m
+[38;5;15m              [39m[38;5;203mmemory[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m512Mi[39m
+[38;5;15m            [39m[38;5;203mrequests[39m[38;5;117m:[39m
+[38;5;15m              [39m[38;5;203mcpu[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m100m[39m
+[38;5;15m              [39m[38;5;203mmemory[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m512Mi[39m
+[38;5;15m      [39m[38;5;203minitContainers[39m[38;5;117m:[39m
+[38;5;15m        [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mgrpc-td-init[39m
+[38;5;15m          [39m[38;5;203mimage[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mus-docker.pkg.dev/grpc-testing/trafficdirector/td-grpc-bootstrap:e4622a2cb6956f85da18eb0aa9daec839c2e38b5[39m
+[38;5;15m          [39m[38;5;203mimagePullPolicy[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mAlways[39m
+[38;5;15m          [39m[38;5;203margs[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--output=/tmp/bootstrap/td-grpc-bootstrap.json[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--vpc-network-name=default[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--config-mesh=emchandwani-psm-grpc-mesh-20250317-1528-l31o3[39m[38;5;150m"[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;150m"[39m[38;5;150m--is-trusted-xds-server-experimental=true[39m[38;5;150m"[39m
+[38;5;15m          [39m[38;5;203mresources[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;203mlimits[39m[38;5;117m:[39m
+[38;5;15m              [39m[38;5;203mcpu[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m100m[39m
+[38;5;15m              [39m[38;5;203mmemory[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m100Mi[39m
+[38;5;15m            [39m[38;5;203mrequests[39m[38;5;117m:[39m
+[38;5;15m              [39m[38;5;203mcpu[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m10m[39m
+[38;5;15m              [39m[38;5;203mmemory[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m100Mi[39m
+[38;5;15m          [39m[38;5;203mvolumeMounts[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mmountPath[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150m/tmp/bootstrap/[39m
+[38;5;15m              [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mgrpc-td-conf[39m
+[38;5;15m      [39m[38;5;203mvolumes[39m[38;5;117m:[39m
+[38;5;15m        [39m[38;5;117m-[39m[38;5;15m [39m[38;5;203mname[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mgrpc-td-conf[39m
+[38;5;15m          [39m[38;5;203memptyDir[39m[38;5;117m:[39m
+[38;5;15m            [39m[38;5;203mmedium[39m[38;5;117m:[39m[38;5;15m [39m[38;5;150mMemory[39m
+[38;5;221m...[39m
+
+I0317 20:59:41.426983 8252002176 k8s_base_runner.py:371] Deployment psm-grpc-client created
+I0317 20:59:41.427248 8252002176 k8s_base_runner.py:981] Waiting for deployment psm-grpc-client to initialize 1 pod(s)
+I0317 20:59:41.975038 8252002176 k8s_base_runner.py:991] Deployment psm-grpc-client initialized 1 pod(s): ['psm-grpc-client-56d49cbb5c-rkwdr']
+I0317 20:59:41.975217 8252002176 k8s_base_runner.py:1001] Waiting for pod psm-grpc-client-56d49cbb5c-rkwdr to start
+I0317 21:02:42.049727 8252002176 xds_k8s_testcase.py:338] --- Finished subTest CloudRunServerBaselineTest.test_GKE_client_cloudrun_service.7_start_test_client ---
+I0317 21:02:42.049942 8252002176 xds_k8s_testcase.py:1512] ----- TestMethod CloudRunServerBaselineTest.test_GKE_client_cloudrun_service teardown -----
+I0317 21:02:42.391082 8252002176 traffic_director.py:1009] Deleting GrpcRoute emchandwani-psm-grpc-route-20250317-1528-l31o3
+I0317 21:02:43.992627 8252002176 api.py:601] Waiting 600 sec for networkservices operation id: projects/emchandwani-default/locations/global/operations/operation-1742225563831-6308b7fd9cd68-5897868c-29fab023
+I0317 21:02:51.864512 8252002176 traffic_director.py:963] Deleting Mesh emchandwani-psm-grpc-mesh-20250317-1528-l31o3
+I0317 21:02:53.242742 8252002176 api.py:601] Waiting 600 sec for networkservices operation id: projects/emchandwani-default/locations/global/operations/operation-1742225573076-6308b8066dc7f-a3a48038-b2273c7d
+I0317 21:02:58.015916 8252002176 traffic_director.py:281] Deleting Backend Service "emchandwani-psm-backend-service-20250317-1528-l31o3"
+I0317 21:11:11.290368 8252002176 xds_k8s_testcase.py:307] Caught Ctrl+C. Cleanup will start in 2 seconds. Press Ctrl+C again to abort.
+I0317 21:11:11.591614 8252002176 xds_k8s_testcase.py:304] Ctrl+C pressed twice, aborting the cleanup.
+I0317 21:11:11.592998 8252002176 xds_k8s_testcase.py:1532] ----- Test client/server logs -----
+I0317 21:11:11.593125 8252002176 k8s_base_runner.py:1114] No completed deployments of psm-grpc-client
+I0317 21:11:11.593617 8252002176 cloud_run_base_runner.py:183] GCP Logs Explorer link to emchandwani-psm-server-20250317-1528-l31o3:
+https://console.cloud.google.com/logs/query;query=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.project_id%3D%22emchandwani-default%22%0Aresource.labels.service_name%3D%22emchandwani-psm-server-20250317-1528-l31o3%22%0Aresource.labels.location%3D%22us-central1%22;timeRange=2025-03-17T15:28:39.186619Z%2F2025-03-17T15:32:42.390991Z;cursorTimestamp=2025-03-17T15:28:42.722469Z?project=emchandwani-default 
+Traceback (most recent call last):
+  File "/Users/emchandwani/psm-interop/tests/cloud_run_server_baseline_test.py", line 72, in <module>
+    absltest.main(failfast=True)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/absl/testing/absltest.py", line 2131, in main
+    _run_in_app(run_tests, args, kwargs)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/absl/testing/absltest.py", line 2236, in _run_in_app
+    app.run(main=main_function)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/absl/app.py", line 308, in run
+    _run_main(main, args)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/absl/app.py", line 254, in _run_main
+    sys.exit(main(argv))
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/absl/testing/absltest.py", line 2234, in main_function
+    function(argv, args, kwargs)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/absl/testing/absltest.py", line 2689, in run_tests
+    result, fail_when_no_tests_ran = _run_and_get_tests_result(
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/absl/testing/absltest.py", line 2653, in _run_and_get_tests_result
+    test_program = unittest.TestProgram(*args, **kwargs)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/main.py", line 101, in __init__
+    self.runTests()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/main.py", line 271, in runTests
+    self.result = testRunner.run(self.test)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/absl/testing/_pretty_print_reporter.py", line 82, in run
+    return super(TextTestRunner, self).run(test)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/runner.py", line 184, in run
+    test(result)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/suite.py", line 122, in run
+    test(result)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/suite.py", line 122, in run
+    test(result)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/case.py", line 650, in __call__
+    return self.run(*args, **kwds)
+  File "/Users/emchandwani/psm-interop/framework/test_cases/base_testcase.py", line 27, in run
+    super().run(result)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/case.py", line 594, in run
+    self._callTearDown()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/unittest/case.py", line 552, in _callTearDown
+    self.tearDown()
+  File "/Users/emchandwani/psm-interop/framework/xds_k8s_testcase.py", line 1528, in tearDown
+    retryer(self.cleanup)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/tenacity/__init__.py", line 423, in __call__
+    do = self.iter(retry_state=retry_state)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/tenacity/__init__.py", line 360, in iter
+    return fut.result()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/_base.py", line 451, in result
+    return self.__get_result()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/tenacity/__init__.py", line 426, in __call__
+    result = fn(*args, **kwargs)
+  File "/Users/emchandwani/psm-interop/framework/xds_k8s_testcase.py", line 1505, in cleanup
+    self.td.cleanup(force=self.force_cleanup)
+  File "/Users/emchandwani/psm-interop/framework/infrastructure/traffic_director.py", line 1028, in cleanup
+    super().cleanup(force=force)
+  File "/Users/emchandwani/psm-interop/framework/infrastructure/traffic_director.py", line 197, in cleanup
+    self.delete_backend_service(force=force)
+  File "/Users/emchandwani/psm-interop/framework/infrastructure/traffic_director.py", line 282, in delete_backend_service
+    self.compute.delete_backend_service(name)
+  File "/Users/emchandwani/psm-interop/framework/infrastructure/gcp/compute.py", line 247, in delete_backend_service
+    self._delete_resource(
+  File "/Users/emchandwani/psm-interop/framework/infrastructure/gcp/compute.py", line 696, in _delete_resource
+    self._execute(collection.delete(**params))
+  File "/Users/emchandwani/psm-interop/framework/infrastructure/gcp/compute.py", line 739, in _execute
+    operation = request.execute(num_retries=self._GCP_API_RETRIES)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/googleapiclient/_helpers.py", line 134, in positional_wrapper
+    return wrapped(*args, **kwargs)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/googleapiclient/http.py", line 900, in execute
+    resp, content = _retry_request(
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/googleapiclient/http.py", line 177, in _retry_request
+    resp, content = http.request(uri, method, *args, **kwargs)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/google_auth_httplib2.py", line 218, in request
+    response, content = self.http.request(
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/httplib2/__init__.py", line 1724, in request
+    (response, content) = self._request(
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/httplib2/__init__.py", line 1444, in _request
+    (response, content) = self._conn_request(conn, request_uri, method, body, headers)
+  File "/Users/emchandwani/psm-interop/venv/lib/python3.10/site-packages/httplib2/__init__.py", line 1396, in _conn_request
+    response = conn.getresponse()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 1375, in getresponse
+    response.begin()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/http/client.py", line 279, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/socket.py", line 717, in readinto
+    return self._sock.recv_into(b)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/ssl.py", line 1307, in recv_into
+    return self.read(nbytes, buffer)
+  File "/opt/homebrew/Cellar/python@3.10/3.10.16/Frameworks/Python.framework/Versions/3.10/lib/python3.10/ssl.py", line 1163, in read
+    return self._sslobj.read(len, buffer)
+  File "/Users/emchandwani/psm-interop/framework/xds_k8s_testcase.py", line 314, in handle_sigint
+    time.sleep(cleanup_delay_sec)
+  File "/Users/emchandwani/psm-interop/framework/xds_k8s_testcase.py", line 325, in handle_sigint
+    raise KeyboardInterrupt
+KeyboardInterrupt

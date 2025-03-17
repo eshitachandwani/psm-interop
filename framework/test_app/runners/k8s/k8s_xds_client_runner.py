@@ -251,6 +251,7 @@ class KubernetesClientRunner(k8s_base_runner.KubernetesBaseRunner):
             if self.deployment_args.enable_csm_observability:
                 monitoring_port = self.DEFAULT_POD_MONITORING_PORT
 
+        logger.info("eshita ip %s , port %s , host %s monitoring port %s",pod.status.pod_ip,rpc_port,rpc_host,monitoring_port)
         return client_app.XdsTestClient(
             ip=pod.status.pod_ip,
             rpc_port=rpc_port,

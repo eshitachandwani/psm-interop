@@ -25,6 +25,7 @@ from typing_extensions import override
 from framework import xds_flags
 from framework import xds_k8s_flags
 from framework.infrastructure.gcp import cloud_run
+from framework.infrastructure import gcp
 from framework.test_app.runners.cloud_run import cloud_run_base_runner
 from framework.test_app.server_app import XdsTestServer
 
@@ -62,6 +63,7 @@ class CloudRunServerRunner(cloud_run_base_runner.CloudRunBaseRunner):
         image_name: str,
         network: str,
         region: str,
+        gcp_api_manager: gcp.api.GcpApiManager,
     ):
         super().__init__(
             project,
@@ -69,6 +71,7 @@ class CloudRunServerRunner(cloud_run_base_runner.CloudRunBaseRunner):
             image_name,
             network=network,
             region=region,
+            gcp_ui_url=gcp_api_manager.gcp_ui_url,
         )
         # Mutable state associated with each run.
         self._reset_state()
@@ -107,7 +110,7 @@ class CloudRunServerRunner(cloud_run_base_runner.CloudRunBaseRunner):
         try:
             if self.service:
                 self.stop()
-                self.service_name = None
-                self.service = None
+                # self.service_name = None
+                # self.service = None
         finally:
             self._stop()

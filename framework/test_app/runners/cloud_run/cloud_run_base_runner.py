@@ -53,9 +53,6 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
     region: str = "us-central1"
     current_revision: Optional[str] = None
     gcp_ui_url: Optional[str] = None
-    is_client: bool = False
-    mesh_name: Optional[str] = None
-    server_target: Optional[str] = None
 
     run_history: collections.deque[RunHistory]
 
@@ -69,11 +66,12 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
         service_name: str,
         image_name: str,
         region: str,
+        gcp_ui_url: str,
         network: Optional[str] = None,
         *,
-        is_client: bool = False,
-        mesh_name: Optional[str] = None,
+        mesh: Optional[str] = None,
         server_target: Optional[str] = None,
+        is_client: Optional[bool] = False,
     ) -> None:
         super().__init__()
 
@@ -83,10 +81,11 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
         self.network = network
         self.region = region
         self.current_revision = None
-        self.gcp_ui_url = None
-        self.is_client = is_client
-        self.mesh_name = mesh_name
+        self.gcp_ui_url = gcp_ui_url
+        self.mesh = mesh
         self.server_target = server_target
+        self.is_client = is_client
+
 
         # Persistent across many runs.
         self.run_history = collections.deque()
@@ -97,11 +96,11 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
         # Highlighter.
         self._highlighter = _HighlighterYaml()
 
-        self._initalize_cloudrun_api_manager()
+        self._initalize_cloud_run_api_manager()
 
-    def _initalize_cloudrun_api_manager(self):
+    def _initalize_cloud_run_api_manager(self):
         """Initializes the CloudRunApiManager."""
-        self.cloudrun_api_manager = cloud_run.CloudRunApiManager(
+        self.cloud_run_api_manager = cloud_run.CloudRunApiManager(
             project=self.project, region=self.region
         )
 
@@ -119,20 +118,12 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
 
         self._reset_state()
         self.time_start_requested = _datetime.now()
-        deploy_kwargs = {**kwargs}
-        deploy_kwargs["is_client"] = self.is_client
-
-        if self.is_client:
-            if not self.mesh_name or not self.server_target:
-                raise ValueError(
-                    "mesh_name and server_target must be provided for client deployment."
-                )
-            deploy_kwargs["mesh_name"] = self.mesh_name
-            deploy_kwargs["server_target"] = self.server_target
-        self.current_revision = self.cloudrun_api_manager.deploy_service(
+        self.current_revision = self.cloud_run_api_manager.deploy_service(
             self.service_name,
             self.image_name,
-            **deploy_kwargs,
+            mesh=self.mesh,
+            server_target=self.server_target,
+            is_client=self.is_client,
         )
 
     def _start_completed(self):
@@ -149,16 +140,74 @@ class CloudRunBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
             )
             self.run_history.append(run_history)
 
-    def get_service_url(self) -> str:
-        return self.cloudrun_api_manager.get_service_url()
+    @classmethod
+    def _logs_explorer_link(
+        cls,
+        *,
+        service_name: str,
+        gcp_project: str,
+        gcp_ui_url: str,
+        location: str,
+        start_time: Optional[_datetime] = None,
+        end_time: Optional[_datetime] = None,
+        cursor_time: Optional[_datetime] = None,
+    ):
+        """Output the link to test server/client logs in GCP Logs Explorer."""
+        if not start_time:
+            start_time = _datetime.now()
+        if not end_time:
+            end_time = start_time + _timedelta(minutes=30)
+
+        logs_start = _helper_datetime.iso8601_utc_time(start_time)
+        logs_end = _helper_datetime.iso8601_utc_time(end_time)
+        request = {"timeRange": f"{logs_start}/{logs_end}"}
+        if cursor_time:
+            request["cursorTimestamp"] = _helper_datetime.iso8601_utc_time(
+                cursor_time
+            )
+        query = {
+            "resource.type": "cloud_run_revision",
+            "resource.labels.project_id": gcp_project,
+            "resource.labels.service_name": service_name,
+            "resource.labels.location": location,
+        }
+
+        link = cls._logs_explorer_link_from_params(
+            gcp_ui_url=gcp_ui_url,
+            gcp_project=gcp_project,
+            query=query,
+            request=request,
+        )
+        link_to = service_name
+        # A whitespace at the end to indicate the end of the url.
+        logger.info("GCP Logs Explorer link to %s:\n%s ", link_to, link)
+
+    def logs_explorer_run_history_links(self):
+        """Prints a separate GCP Logs Explorer link for each run *completed* by
+        the runner.
+        This excludes the current run, if it hasn't been completed.
+        """
+        if not self.run_history:
+            logger.info("No completed deployments of %s", self.service_name)
+            return
+        for run in self.run_history:
+            self._logs_explorer_link(
+                service_name=self.service_name,
+                gcp_project=self.project,
+                gcp_ui_url=self.gcp_ui_url,
+                location=self.region,
+                start_time=run.time_start_requested,
+                cursor_time=run.time_start_completed,
+                end_time=run.time_stopped,
+            )
 
     def stop(self):
         """Deletes Cloud Run Service"""
         logger.info("Deleting Cloud Run service: %s", self.service_name)
         try:
-            self.cloudrun_api_manager.delete_service(self.service_name)
-            logger.info("Cloud Run service %s deleted", self.service_name)
-        except Exception as e:
+            self.cloud_run_api_manager.delete_service(self.service_name)
+            logger.info("Deleted cloud run service: %s", self.service_name)
+        except Exception as e:  # noqa pylint: disable=broad-except
             logger.warning(
                 "Cloud Run service %s deletion failed: %s", self.service_name, e
             )

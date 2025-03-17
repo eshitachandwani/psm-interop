@@ -13,14 +13,10 @@
 # limitations under the License.
 import abc
 import logging
-import subprocess
-import os
 
-from google.cloud import run_v2
-from google.api import launch_stage_pb2
+from googleapiclient import discovery
 
-from typing import Optional
-from framework.infrastructure.gcp.api import GcpProjectApiResource
+from framework.infrastructure import gcp
 
 logger = logging.getLogger(__name__)
 
@@ -28,27 +24,67 @@ DEFAULT_TEST_PORT = 8080
 DEFAULT_TIMEOUT = 600
 
 
-class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
+class CloudRunApiManager(
+    gcp.api.GcpStandardCloudApiResource, metaclass=abc.ABCMeta
+):
     project: str
     region: str
-    _connector: str
-    _connector_name: str
     _parent: str
-    _client: run_v2.ServicesClient
-    _service: run_v2.Service
+    service: discovery.Resource
+    api_manager: gcp.api.GcpApiManager
 
     def __init__(self, project: str, region: str):
         if not project:
             raise ValueError("Project ID cannot be empty or None.")
         if not region:
             raise ValueError("Region cannot be empty or None.")
-
+        self.api_manager = gcp.api.GcpApiManager(
+            v2_discovery_uri="https://run.googleapis.com/$discovery/rest?"
+        )
         self.project = project
         self.region = region
-        client_options = {"api_endpoint": f"{self.region}-run.googleapis.com"}
-        self._client = run_v2.ServicesClient(client_options=client_options)
+        service: discovery.Resource = self.api_manager.cloudrun("v2")
+        self.service = service
         self._parent = f"projects/{self.project}/locations/{self.region}"
-        self._service = None
+        super().__init__(self.service, project)
+
+    @property
+    def api_name(self) -> str:
+        """Returns the API name for Cloud Run."""
+        return "run"
+
+    @property
+    def api_version(self) -> str:
+        """Returns the API version for Cloud Run."""
+        return "v2"
+
+    def create_cloud_run_resource(
+        self, service: discovery.Resource, service_name: str, body: dict
+    ):
+        service.projects().locations().services().create(
+            parent=self._parent, serviceId=service_name, body=body
+        ).execute()
+
+    def get_cloud_run_resource(
+        self, service: discovery.Resource, service_name: str
+    ):
+        return self._get_resource(
+            collection=service.projects().locations().services(),
+            full_name=self.resource_full_name(
+                service_name, "services", self.region
+            ),
+        )
+
+    def get_service_uri(self, service_name: str) -> str:
+        response = self.get_cloud_run_resource(self.service, service_name)
+        return response.get("urls")[0]
+
+    def delete_cloud_run_resource(
+        self, service: discovery.Resource, service_name: str
+    ):
+        service.projects().locations().services().delete(
+            name=self.resource_full_name(service_name, "services", self.region)
+        ).execute()
 
     def deploy_service(
         self,
@@ -56,88 +92,94 @@ class CloudRunApiManager(GcpProjectApiResource, metaclass=abc.ABCMeta):
         image_name: str,
         *,
         test_port: int = DEFAULT_TEST_PORT,
-        mesh_name: Optional[str] = None,
-        server_target: Optional[str] = None,
-        is_client: bool = False
+        is_client: bool = False,
+        test_port_client: int = 8079,
+        server_target: str = "",
+        mesh: str = ""
     ):
         if not service_name:
             raise ValueError("service_name cannot be empty or None")
         if not image_name:
             raise ValueError("image_name cannot be empty or None")
-        service_name = service_name[:49]
-
-        containers = [
-            run_v2.Container(
-                image=image_name,
-                ports=[
-                    run_v2.ContainerPort(
-                        name="h2c",
-                        container_port=test_port , # conditional port setting
-                    ),
-                ],
-            )
-        ]
-
-        revision_template_args = {}
-        if is_client:
-            containers = [
-            run_v2.Container(
-                image=image_name,
-                ports=[
-                    run_v2.ContainerPort(
-                        name="h2c",
-                        container_port=8079 , # conditional port setting
-                    ),
-                ],
-            )
-        ]
-            if not mesh_name or not server_target:
-                raise ValueError("mesh_name and server_target are required for client deployment.")
-
-            revision_template_args["vpc_access"] = run_v2.VpcAccess(
-                network_interfaces=[run_v2.VpcAccess.NetworkInterface(
-                    network="default",
-                    subnetwork="default",
-                )]
-            )
-            revision_template_args["service_mesh"] = run_v2.ServiceMesh(
-                    mesh=mesh_name,
-                )
-            containers[0].args = [f"--server={server_target}", "--secure_mode=false"]
-            containers[0].env = [run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_AUTHORITY_REWRITE",value="true"),run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_SYSTEM_ROOT_CERTS",value="true"),run_v2.EnvVar(name="GRPC_EXPERIMENTAL_XDS_GCP_AUTHENTICATION_FILTER",value="true"),run_v2.EnvVar(name="is-trusted-xds-server-experimental",value="true"),run_v2.EnvVar(name="GRPC_XDS_BOOTSTRAP_CONFIG",value="/tmp/grpc-xds/td-grpc-bootstrap.json")]
-            
-        revision_template = run_v2.RevisionTemplate(
-            containers=containers, **revision_template_args
-        )
-
-        service = run_v2.Service(launch_stage=launch_stage_pb2.ALPHA,template=revision_template)
-
-        request = run_v2.CreateServiceRequest(
-            parent=self._parent, service=service, service_id=service_name
-        )
-
+        
         try:
-            operation = self._client.create_service(request=request)
-            self._service = operation.result(timeout=DEFAULT_TIMEOUT)
-            logger.info("Deployed service: %s", self._service.uri)
-            return self._service.uri
-        except Exception as e:
-            logger.exception("Error deploying service: %s", e)
-            raise
+            service_body = {}
+            service_body={
+              "launch_stage":"alpha",
+             "template":
+                       {
+                            "containers": [
+                               {
+                                  "image": image_name,
+                                    "ports": [{"containerPort": test_port, "name": "h2c"}],            
+                                }
+                             ],
+                        },
+                    }
+            
+            if is_client:
+                service_body={
+                    "launch_stage":"alpha",
+                    "template":
+                        {
+                            "containers": [
+                               {
+                                  "image": image_name,
+                                  "ports": [{"containerPort": 50052, "name": "h2c"}],  
+                                  "args": [f"--server={server_target}", "--secure_mode=true",],
+                                  "env":[
+                                    {
+                                        "name":"GRPC_EXPERIMENTAL_XDS_AUTHORITY_REWRITE",
+                                        "value":"true"
+                                    },
+                                    {
+                                        "name":"GRPC_EXPERIMENTAL_XDS_SYSTEM_ROOT_CERTS",
+                                        "value":"true"
+                                    },
+                                    {
+                                        "name":"GRPC_EXPERIMENTAL_XDS_GCP_AUTHENTICATION_FILTER",
+                                        "value":"true"
+                                    },
+                                    {
+                                        "name":"is-trusted-xds-server-experimental",
+                                        "value":"true"
+                                    },
+                                    {
+                                        "name":"GRPC_XDS_BOOTSTRAP_CONFIG",
+                                        "value":"/tmp/grpc-xds/td-grpc-bootstrap.json"
+                                    }
+                                  ]
+                                }
+                             ],
+                            "vpcAccess": {
+                                "networkInterfaces": [
+                                {
+                                 "network": "default",
+                                 "subnetwork": "default",
+                                }
+                              ]
+                           },
+                            "service_mesh":{
+                                "mesh":mesh,
+                                "dataplaneMode":"PROXYLESS_GRPC"
+                                }
+                        },
+                        "ingress": "INGRESS_TRAFFIC_ALL",
+                        "traffic": [{"type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST", "percent": 100}],
+                    }
 
-    def get_service_url(self):
-        if self._service is None:
-            raise RuntimeError("Cloud Run service not deployed yet.")
-        return self._service.uri
+
+            self.create_cloud_run_resource(self.service,service_name,service_body)
+            logger.info("Deploying Cloud Run service '%s'", service_name)
+            return self.get_service_uri(service_name)
+
+        except Exception as e:  # noqa pylint: disable=broad-except
+            logger.exception("Error deploying Cloud Run service: %s", e)
+            raise
 
     def delete_service(self, service_name: str):
         try:
-            request = run_v2.DeleteServiceRequest(
-                name=f"{self._parent}/services/{service_name}"
-            )
-            operation = self._client.delete_service(request=request)
-            operation.result(timeout=DEFAULT_TIMEOUT)
-            logger.info("Deleted service: %s", service_name)
+            self.delete_cloud_run_resource(self.service, service_name)
         except Exception as e:
             logger.exception("Error deleting service: %s", e)
             raise
