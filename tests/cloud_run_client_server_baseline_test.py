@@ -61,8 +61,8 @@ class CloudRunClientServerBaselineTest(
                 is_trusted_xds_server_experimental=True,
             )
 
-        # with self.subTest("8_test_client_xds_config_exists"):
-        #     self.assertXdsConfigExists(test_client)
+        with self.subTest("8_test_client_xds_config_exists"):
+            self.assertXdsConfigExists(test_client)
 
         # with self.subTest("9_test_server_received_rpcs_from_test_client"):
         #     self.assertSuccessfulRpcs(test_client)
