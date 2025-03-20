@@ -133,6 +133,14 @@ class CloudRunApiManager(
                                         "value":"true"
                                     },
                                     {
+                                        "name":"GRPC_TRACE",
+                                        "value":"all,-timer,-timer_check"
+                                    },
+                                    {
+                                        "name":"GRPC_VERBOSITY",
+                                        "value":"DEBUG"
+                                    },
+                                    {
                                         "name":"GRPC_EXPERIMENTAL_XDS_SYSTEM_ROOT_CERTS",
                                         "value":"true"
                                     },
@@ -170,19 +178,19 @@ class CloudRunApiManager(
 
 
             self.create_cloud_run_resource(self.service,service_name,service_body)
-            if is_client:
-                policy_body={}
-                policy_body={
-                    "policy": {
-                        "bindings": [
-                            {
-                                "role": "roles/run.invoker",
-                                "members": ["allUsers"]
-                            }
-                        ],
-                    },
-                }
-                self.service.projects().locations().services().setIamPolicy(resource=self.resource_full_name(service_name, "services", self.region), body=policy_body).execute() # pylint: disable=no-member
+            # if is_client:
+            #     policy_body={}
+            #     policy_body={
+            #         "policy": {
+            #             "bindings": [
+            #                 {
+            #                     "role": "roles/run.invoker",
+            #                     "members": ["allUsers"]
+            #                 }
+            #             ],
+            #         },
+            #     }
+            #     self.service.projects().locations().services().setIamPolicy(resource=self.resource_full_name(service_name, "services", self.region), body=policy_body).execute() # pylint: disable=no-member
             logger.info("Deploying Cloud Run service '%s'", service_name)
             return self.get_service_uri(service_name)
 
