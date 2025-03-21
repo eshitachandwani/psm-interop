@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import time
 
 from absl.testing import absltest
 
@@ -60,6 +61,7 @@ class CloudRunClientServerBaselineTest(
                 config_mesh=self.td.mesh.name,
                 is_trusted_xds_server_experimental=True,
             )
+            time.sleep(30)
 
         with self.subTest("8_test_client_xds_config_exists"):
             self.assertXdsConfigExists(test_client)

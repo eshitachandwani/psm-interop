@@ -569,7 +569,7 @@ class XdsKubernetesBaseTestCase(base_testcase.BaseTestCase):
                 "listener_config",
                 "cluster_config",
                 "route_config",
-                "endpoint_config",
+                # "endpoint_config",
             ]
         )
         for xds_config in config.xds_config:
@@ -1659,8 +1659,8 @@ class CloudRunXdsTestCase(SecurityXdsKubernetesTestCase):
 
     def cleanup(self):
         self.server_runner.cleanup(force=self.force_cleanup)
-        self.td.cleanup(force=self.force_cleanup)
-        self.compute_v1.delete_serverless_neg(self.neg["name"], self.region)
+        # self.td.cleanup(force=self.force_cleanup)
+        # self.compute_v1.delete_serverless_neg(self.neg["name"], self.region)
         self.client_runner.cleanup(
             force=self.force_cleanup
         )

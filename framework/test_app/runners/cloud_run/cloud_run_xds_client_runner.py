@@ -111,7 +111,7 @@ class CloudRunClientRunner(cloud_run_base_runner.CloudRunBaseRunner):
         #     monitoring_port=monitoring_port,
         # )
         client = XdsTestClient(
-                ip=self.current_revision[8:], rpc_port=50052, server_target=self.server_target,hostname=self.current_revision,rpc_host=None,monitoring_port=9464,
+                ip=self.current_revision[8:], rpc_port=443,rpc_host=self.current_revision[8:], server_target=self.server_target,hostname=self.current_revision
             )
         self._start_completed()
         return client
@@ -122,8 +122,7 @@ class CloudRunClientRunner(cloud_run_base_runner.CloudRunBaseRunner):
     @override
     def cleanup(self, *, force=False):
         try:
-            self.stop()
-            # self.service_name = None
-            # self.service = None
+            if self.service:
+                self.stop()
         finally:
             self._stop()
