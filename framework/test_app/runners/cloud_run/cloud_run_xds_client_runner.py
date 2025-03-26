@@ -111,7 +111,7 @@ class CloudRunClientRunner(cloud_run_base_runner.CloudRunBaseRunner):
         #     monitoring_port=monitoring_port,
         # )
         client = XdsTestClient(
-                ip=self.current_revision[8:], rpc_port=443,rpc_host=self.current_revision[8:], server_target=self.server_target,hostname=self.current_revision
+                ip=self.current_revision[8:], rpc_port=443,rpc_host=self.current_revision[8:], server_target=self.server_target,hostname=self.current_revision[8:],maintenance_port=443
             )
         self._start_completed()
         return client

@@ -186,6 +186,7 @@ class CsdsClient(framework.rpc.grpc.GrpcClientHelper):
                 "Unexpected number of client configs: %s", len(response.config)
             )
             return None
+        logger.info("eshita response %s",response.config[0])
         return response.config[0]
 
     def fetch_client_status_parsed(self, **kwargs) -> Optional[DumpedXdsConfig]:

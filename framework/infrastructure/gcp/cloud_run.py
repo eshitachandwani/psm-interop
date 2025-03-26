@@ -13,7 +13,10 @@
 # limitations under the License.
 import abc
 import logging
+import google
+import time
 
+import google.auth
 from googleapiclient import discovery
 
 from framework.infrastructure import gcp
@@ -45,6 +48,11 @@ class CloudRunApiManager(
         self.region = region
         service: discovery.Resource = self.api_manager.cloudrun("v2")
         self.service = service
+        # client_options = {"api_endpoint": f"https://{self.region}-staging-run.sandbox.googleapis.com"}
+        # credentials, _ = google.auth.default()
+        # service: discovery.Resource = discovery.build(
+        # "run", "v2",discoveryServiceUrl="https://staging-run.sandbox.googleapis.com/$discovery/rest?",credentials=credentials, cache_discovery=False,developerKey="AIzaSyAV2c0JJI1II7_nlVzBhmgWtxXQWX4e71A",client_options=client_options)
+        # self.service = service
         self._parent = f"projects/{self.project}/locations/{self.region}"
         super().__init__(self.service, project)
 
@@ -64,6 +72,8 @@ class CloudRunApiManager(
         service.projects().locations().services().create(
             parent=self._parent, serviceId=service_name, body=body
         ).execute()
+        # self._execute(req)
+        # self._wait(op["name"])
 
     def get_cloud_run_resource(
         self, service: discovery.Resource, service_name: str
@@ -118,6 +128,12 @@ class CloudRunApiManager(
                     }
             
             if is_client:
+                # client_options = {"api_endpoint": f"https://{self.region}-staging-run.sandbox.googleapis.com"}
+                # credentials, _ = google.auth.default()
+                # service: discovery.Resource = discovery.build(
+                # "run", "v2",discoveryServiceUrl="https://staging-run.sandbox.googleapis.com/$discovery/rest?",credentials=credentials, cache_discovery=False,developerKey="AIzaSyAV2c0JJI1II7_nlVzBhmgWtxXQWX4e71A",client_options=client_options)
+                # self.service = service
+
                 service_body={
                     "launch_stage":"alpha",
                     "template":
@@ -134,7 +150,7 @@ class CloudRunApiManager(
                                     },
                                     {
                                         "name":"GRPC_TRACE",
-                                        "value":"xds_client,http"
+                                        "value":"http,xds_client,xds_resolver,xds_cluster_manager_lb,cds_lb,xds_cluster_impl_lb"
                                     },
                                     {
                                         "name":"GRPC_VERBOSITY",
@@ -163,20 +179,37 @@ class CloudRunApiManager(
                                 "mesh":mesh,
                                 "dataplaneMode":"PROXYLESS_GRPC"
                                 },
-                            "vpc_access":{
-                                "network_interfaces":{
-                                    "network":"default",
-                                    "subnetwork":"default",
-                                }
-                            }
+                            # "vpc_access":{
+                            #     "network_interfaces":{
+                            #         "network":"default",
+                            #         "subnetwork":"default",
+                            #     }
+                            # }
                         },
-                        "ingress": "INGRESS_TRAFFIC_ALL",
-                        "traffic": [{"type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST", "percent": 100}],
+                        # "ingress": "INGRESS_TRAFFIC_ALL",
+                        # "traffic": [{"type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST", "percent": 100}],
                     }
 
 
             self.create_cloud_run_resource(self.service,service_name,service_body)
+            # Wait before polling again
+            
             if is_client:
+                while True:
+                    #pylint: disable=no-member
+                    get_request = self.service.projects().locations().services().get(
+                    name=f"projects/{self.project}/locations/{self.region}/services/{service_name}"
+                    )
+                    get_response = get_request.execute()
+
+                    if not get_response.get("reconciling", False):  # Wait until reconciling is False
+                        print(f"Cloud Run service '{service_name}' is ready.")
+                        print(f"Service URL: {get_response.get('urls', ['No URL found'])[0]}")
+                        break
+
+                    print("Waiting for Cloud Run service to become ready...")
+                    time.sleep(5)  # Wait before polling again
+
                 policy_body={}
                 policy_body={
                     "policy": {
@@ -189,6 +222,7 @@ class CloudRunApiManager(
                     },
                 }
                 self.service.projects().locations().services().setIamPolicy(resource=self.resource_full_name(service_name, "services", self.region), body=policy_body).execute() # pylint: disable=no-member
+                time.sleep(60) # Because client takes time to be deployed and fetch the complete config , if we immediately fetch the config, it gives incomplete config.
             logger.info("Deploying Cloud Run service '%s'", service_name)
             return self.get_service_uri(service_name)
 

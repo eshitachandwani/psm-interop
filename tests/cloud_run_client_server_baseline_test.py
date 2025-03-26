@@ -61,9 +61,10 @@ class CloudRunClientServerBaselineTest(
                 config_mesh=self.td.mesh.name,
                 is_trusted_xds_server_experimental=True,
             )
-            time.sleep(30)
+            
 
         with self.subTest("8_test_client_xds_config_exists"):
+            # time.sleep(15)
             self.assertXdsConfigExists(test_client)
 
         # with self.subTest("9_test_server_received_rpcs_from_test_client"):
