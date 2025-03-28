@@ -179,12 +179,12 @@ class CloudRunApiManager(
                                 "mesh":mesh,
                                 "dataplaneMode":"PROXYLESS_GRPC"
                                 },
-                            # "vpc_access":{
-                            #     "network_interfaces":{
-                            #         "network":"default",
-                            #         "subnetwork":"default",
-                            #     }
-                            # }
+                            "vpc_access":{
+                                "network_interfaces":{
+                                    "network":"default",
+                                    "subnetwork":"default",
+                                }
+                            }
                         },
                         # "ingress": "INGRESS_TRAFFIC_ALL",
                         # "traffic": [{"type": "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST", "percent": 100}],
@@ -222,7 +222,7 @@ class CloudRunApiManager(
                     },
                 }
                 self.service.projects().locations().services().setIamPolicy(resource=self.resource_full_name(service_name, "services", self.region), body=policy_body).execute() # pylint: disable=no-member
-                time.sleep(60) # Because client takes time to be deployed and fetch the complete config , if we immediately fetch the config, it gives incomplete config.
+                # time.sleep(60) # Because client takes time to be deployed and fetch the complete config , if we immediately fetch the config, it gives incomplete config.
             logger.info("Deploying Cloud Run service '%s'", service_name)
             return self.get_service_uri(service_name)
 

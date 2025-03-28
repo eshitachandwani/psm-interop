@@ -67,8 +67,8 @@ class CloudRunClientServerBaselineTest(
             # time.sleep(15)
             self.assertXdsConfigExists(test_client)
 
-        # with self.subTest("9_test_server_received_rpcs_from_test_client"):
-        #     self.assertSuccessfulRpcs(test_client)
+        with self.subTest("9_test_server_received_rpcs_from_test_client"):
+            self.assertSuccessfulRpcs(test_client)
 
 
 if __name__ == "__main__":

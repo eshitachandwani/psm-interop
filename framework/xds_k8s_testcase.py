@@ -1664,6 +1664,100 @@ class CloudRunXdsTestCase(SecurityXdsKubernetesTestCase):
         """No-op for Cloud Run as EDS is not required."""
         _ = (seen, config, want)
 
+    def assertXdsConfigExists(
+        self,
+        test_client: XdsTestClient,
+        # servers: Sequence[XdsTestServer],
+        # num_rpcs: int = 100,
+        *,
+        retry_timeout: dt.timedelta = TD_CONFIG_MAX_WAIT,
+        retry_wait: dt.timedelta = dt.timedelta(seconds=1),
+    ) -> None:
+            # TODO(sergiitk): force num_rpcs to be a kwarg
+            retryer = retryers.constant_retryer(
+                wait_fixed=retry_wait,
+                timeout=retry_timeout,
+                log_level=logging.INFO,
+                error_note=(
+                    f"Could not find correct bootstrap config"
+                    f" before timeout {retry_timeout} (h:mm:ss)"
+                ),
+            )
+            retryer(
+                self._assertXdsConfigExists,
+                test_client,
+            )
+
+    def _assertXdsConfigExists(
+        self,
+        test_client: XdsTestClient,
+    ):
+        config = test_client.csds.fetch_client_status(log_level=logging.INFO)
+        self.assertIsNotNone(config)
+        seen = set()
+        want = frozenset(
+            [
+                "listener_config",
+                "cluster_config",
+                "route_config",
+                # "endpoint_config",
+            ]
+        )
+        for xds_config in config.xds_config:
+            seen.add(xds_config.WhichOneof("per_xds_config"))
+        for generic_xds_config in config.generic_xds_configs:
+            if re.search(r"\.Listener$", generic_xds_config.type_url):
+                seen.add("listener_config")
+            elif re.search(
+                r"\.RouteConfiguration$", generic_xds_config.type_url
+            ):
+                seen.add("route_config")
+            elif re.search(r"\.Cluster$", generic_xds_config.type_url):
+                seen.add("cluster_config")
+            # elif re.search(
+            #     r"\.ClusterLoadAssignment$", generic_xds_config.type_url
+            # ):
+            #     seen.add("endpoint_config")
+        logger.debug(
+            "Received xDS config dump: %s",
+            json_format.MessageToJson(config, indent=2),
+        )
+        self.assertSameElements(want, seen)
+
+    # def assertXdsConfigExists(self, test_client: XdsTestClient):
+    #     config = test_client.csds.fetch_client_status(log_level=logging.INFO)
+    #     self.assertIsNotNone(config)
+    #     seen = set()
+    #     want = frozenset(
+    #         [
+    #             "listener_config",
+    #             "cluster_config",
+    #             "route_config",
+    #             # "endpoint_config",
+    #         ]
+    #     )
+    #     for xds_config in config.xds_config:
+    #         seen.add(xds_config.WhichOneof("per_xds_config"))
+    #     for generic_xds_config in config.generic_xds_configs:
+    #         if re.search(r"\.Listener$", generic_xds_config.type_url):
+    #             seen.add("listener_config")
+    #         elif re.search(
+    #             r"\.RouteConfiguration$", generic_xds_config.type_url
+    #         ):
+    #             seen.add("route_config")
+    #         elif re.search(r"\.Cluster$", generic_xds_config.type_url):
+    #             seen.add("cluster_config")
+    #         elif re.search(
+    #             r"\.ClusterLoadAssignment$", generic_xds_config.type_url
+    #         ):
+    #             seen.add("endpoint_config")
+    #     logger.debug(
+    #         "Received xDS config dump: %s",
+    #         json_format.MessageToJson(config, indent=2),
+    #     )
+    #     self.assertSameElements(want, seen)
+
+
     def cleanup(self):
         self.server_runner.cleanup(force=self.force_cleanup)
         # self.td.cleanup(force=self.force_cleanup)

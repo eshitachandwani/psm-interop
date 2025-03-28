@@ -104,7 +104,7 @@ class GrpcApp:
         if port not in self.channels:
             target = f"{self.rpc_host}:{port}"
             self.channels[port] = grpc.secure_channel(target, grpc.ssl_channel_credentials())
-        logger.info("eshita : target for the secure channel %s",target)
+        # logger.info("eshita : target for the secure channel %s",target)
         return self.channels[port]
 
     def close(self):
