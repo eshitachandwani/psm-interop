@@ -1095,6 +1095,32 @@ class KubernetesBaseRunner(base_runner.BaseRunner, metaclass=ABCMeta):
             neg_zones,
         )
 
+    def _wait_service_csm_mesh_annotation(
+        self,
+        service_name: str,
+        service_port: int,
+        **kwargs,
+    ) -> None:
+        logger.info(
+            "Waiting for '%s' annotation for a CSM mesh to be assigned to"
+            " Kubernetes Service %s in namespace %s",
+            self.k8s_namespace.CSM_MESH_ANNOTATION,
+            service_name,
+            self.k8s_namespace.name,
+        )
+        self.k8s_namespace.wait_for_service_csm_mesh_annotation(
+            service_name, **kwargs
+        )
+        # neg_name, neg_zones = self.k8s_namespace.parse_service_csm_mesh(
+        #     service_name, service_port
+        # )
+        logger.info(
+            "Detected '%s' annotation for Kubernetes Service %s, namespace %s",
+            self.k8s_namespace.CSM_MESH_ANNOTATION,
+            service_name,
+            self.k8s_namespace.name,
+        )
+
     def logs_explorer_link(self):
         """Prints GCP Logs Explorer link to all runs of the deployment."""
         self._logs_explorer_link(

@@ -234,6 +234,12 @@ class GammaServerRunner(KubernetesServerRunner):
             timeout_sec=datetime.timedelta(minutes=4).total_seconds(),
         )
 
+        self._wait_service_csm_mesh_annotation(
+            self.service_name,
+            test_port,
+            timeout_sec=datetime.timedelta(minutes=10).total_seconds(),
+        )
+
         return servers
 
     def create_session_affinity_policy(self, template: str, **template_vars):

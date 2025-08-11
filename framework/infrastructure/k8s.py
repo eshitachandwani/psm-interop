@@ -294,6 +294,7 @@ class KubernetesNamespace:  # pylint: disable=too-many-public-methods
     _name: str
 
     NEG_STATUS_ANNOTATION = "cloud.google.com/neg-status"
+    CSM_MESH_ANNOTATION="networking.gke.io/meshes"
     # TODO(sergiitk): get rid of _SEC variables, only use timedelta
     # timedelta.seconds: assumes none of the timeouts more than a day.
     DELETE_GRACE_PERIOD: Final[_timedelta] = _timedelta(seconds=5)
@@ -938,6 +939,50 @@ class KubernetesNamespace:  # pylint: disable=too-many-public-methods
         neg_zones: List[str] = neg_info["zones"]
         return neg_name, neg_zones
 
+
+    def wait_for_service_csm_mesh_annotation(
+        self,
+        name: str,
+        timeout_sec: int = WAIT_SHORT_TIMEOUT_SEC,
+        wait_sec: int = WAIT_SHORT_SLEEP_SEC,
+    ) -> None:
+        timeout = _timedelta(seconds=timeout_sec)
+        retryer = retryers.constant_retryer(
+            wait_fixed=_timedelta(seconds=wait_sec),
+            timeout=timeout,
+            check_result=self._check_service_csm_mesh_annotation,
+        )
+        try:
+            retryer(self.get_service, name)
+        except retryers.RetryError as retry_err:
+            result = retry_err.result()
+            note = framework.errors.FrameworkError.note_blanket_error_info_below(
+                "A Kubernetes Service wasn't assigned a CSM gateway mesh annotation.",
+                info_below=(
+                    f"Timeout {timeout} (h:mm:ss) waiting for Kubernetes"
+                    f" Service {name} in the namespace {self.name} to report"
+                    f" the '{self.CSM_MESH_ANNOTATION}' metadata annotation."
+                    f"{self.pretty_format_metadata(result, highlight=False)}"
+                    f"Service status:\n"
+                    f"{self.pretty_format_status(result, highlight=False)}"
+                ),
+            )
+            retry_err.add_note(note)
+            raise
+
+    def parse_service_csm_mesh(
+        self, service_name: str, service_port: int
+    ) -> Tuple[str, List[str]]:
+        service = self.get_service(service_name)
+        csm_mesh_info: dict = json.loads(
+            service.metadata.annotations[self.CSM_MESH_ANNOTATION]
+        )
+        neg_name: str = csm_mesh_info["network_endpoint_groups"][str(service_port)]
+        neg_zones: List[str] = csm_mesh_info["zones"]
+        return neg_name, neg_zones
+
+
+
     def get_deployment(self, name) -> V1Deployment:
         return self._get_resource(
             self._api.apps.read_namespaced_deployment, name, self.name
@@ -1231,6 +1276,15 @@ class KubernetesNamespace:  # pylint: disable=too-many-public-methods
         return (
             isinstance(service, V1Service)
             and cls.NEG_STATUS_ANNOTATION in service.metadata.annotations
+        )
+    
+    @classmethod
+    def _check_service_csm_mesh_annotation(
+        cls, service: Optional[V1Service]
+    ) -> bool:
+        return (
+            isinstance(service, V1Service)
+            and cls.CSM_MESH_ANNOTATION in service.metadata.annotations
         )
 
     @classmethod
